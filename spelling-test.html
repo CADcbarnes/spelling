@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Spelling Test - Sort 25</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    padding: 16px 16px 40px;
+    color: #e8e8f0;
+    overflow-x: hidden;
+  }
+
+  .header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
+  .header .sub { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #7eb8f7; margin-bottom: 5px; font-family: 'Courier New', monospace; }
+  .header h1 { font-size: clamp(22px, 6vw, 38px); font-weight: 700; background: linear-gradient(90deg, #7eb8f7, #c4b5fd, #7eb8f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header .desc { font-size: 12px; color: #9ca3c8; margin-top: 4px; }
+
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  /* BLOCKER */
+  .blocker { text-align: center; }
+  .blocker .icon { font-size: 48px; margin-bottom: 14px; }
+  .blocker h2 { font-size: 18px; color: #ffa050; margin-bottom: 10px; }
+  .blocker p { font-size: 14px; line-height: 1.7; color: #c8d0e8; margin-bottom: 10px; }
+  .blocker .steps { text-align: left; background: rgba(255,255,255,0.06); border-radius: 12px; padding: 16px 18px; margin: 14px 0; font-size: 13px; color: #c8d0e8; line-height: 2.2; }
+  .blocker .steps strong { color: #7eb8f7; }
+  .url-box { background: rgba(126,184,247,0.1); border: 1px solid rgba(126,184,247,0.3); border-radius: 10px; padding: 12px 16px; font-family: 'Courier New', monospace; font-size: 14px; color: #7eb8f7; word-break: break-all; margin: 12px 0; }
+
+  /* INTRO */
+  .intro { text-align: center; }
+  .intro .icon { font-size: 48px; margin-bottom: 12px; }
+  .intro p { font-size: 15px; line-height: 1.7; color: #c8d0e8; margin-bottom: 6px; }
+  .intro .note { font-size: 12px; color: #7a84a8; margin-bottom: 16px; }
+  .slider-row { margin-bottom: 16px; text-align: left; }
+  .slider-row .lbl { display: flex; justify-content: space-between; font-size: 12px; color: #7a84a8; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+  .slider-row .lbl span:last-child { color: #7eb8f7; font-weight: 600; }
+  input[type=range] { width: 100%; accent-color: #7eb8f7; height: 24px; cursor: pointer; }
+  .slider-hints { display: flex; justify-content: space-between; font-size: 11px; color: #4a5070; margin-top: 2px; }
+  .voice-row { margin-bottom: 16px; text-align: left; }
+  .voice-row label { font-size: 12px; color: #7a84a8; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+  .voice-row select { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #e8e8f0; padding: 10px 12px; font-size: 15px; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 14px; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: #7a84a8; margin-bottom: 6px; }
+  .progress-bar { background: rgba(255,255,255,0.08); border-radius: 100px; height: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #4a7fd4, #7c5cbf); border-radius: 100px; transition: width 0.5s ease; }
+
+  /* AGENT */
+  .agent-indicator { text-align: center; margin-bottom: 12px; min-height: 38px; display: flex; align-items: center; justify-content: center; }
+  .agent-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); border-radius: 100px; padding: 7px 16px; font-size: 13px; color: #9ca3c8; }
+  .bars { display: flex; gap: 3px; align-items: center; }
+  .bar { display: inline-block; width: 3px; height: 14px; background: #7eb8f7; border-radius: 2px; animation: bounce 0.8s ease-in-out infinite; }
+  .bar:nth-child(2){animation-delay:.15s;} .bar:nth-child(3){animation-delay:.3s;}
+  @keyframes bounce{0%,100%{transform:scaleY(0.4);}50%{transform:scaleY(1);}}
+
+  .phase-label { text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-family: 'Courier New', monospace; }
+  .phase-spell { color: #7eb8f7; }
+  .phase-cat   { color: #c4b5fd; }
+
+  /* TILES */
+  .tiles-wrap { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 58px; align-items: center; margin-bottom: 8px; padding: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+  .tile { width: 40px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', monospace; font-size: 22px; font-weight: 700; background: rgba(126,184,247,0.15); border: 1.5px solid rgba(126,184,247,0.4); color: #7eb8f7; cursor: pointer; touch-action: manipulation; transition: all 0.15s; user-select: none; }
+  .tile:active { background: rgba(220,80,80,0.25); border-color: #e87a7a; color: #e87a7a; transform: scale(0.92); }
+  .tile.new { animation: popIn 0.2s ease; }
+  @keyframes popIn{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .tiles-empty { color: #3a4060; font-size: 13px; }
+
+  .status-line { text-align: center; font-size: 12px; color: #7a84a8; margin-bottom: 10px; min-height: 18px; font-family: 'Courier New', monospace; }
+
+  /* BIG MIC BUTTON - thumb-friendly */
+  .mic-area { text-align: center; margin-bottom: 14px; }
+  .mic-btn {
+    width: 88px; height: 88px; border-radius: 50%; border: none; cursor: pointer;
+    font-size: 34px; display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #4a7fd4, #7c5cbf);
+    box-shadow: 0 6px 20px rgba(74,127,212,0.45);
+    transition: transform 0.15s, box-shadow 0.15s;
+    touch-action: manipulation; user-select: none;
+    -webkit-user-select: none;
+  }
+  .mic-btn:active { transform: scale(0.93); box-shadow: 0 3px 10px rgba(74,127,212,0.3); }
+  .mic-btn:disabled { background: rgba(255,255,255,0.08); box-shadow: none; cursor: not-allowed; color: #4a5070; }
+  .mic-btn.listening {
+    background: linear-gradient(135deg, #d44a4a, #bf5c5c);
+    box-shadow: 0 6px 20px rgba(212,74,74,0.55);
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+  .mic-label { font-size: 13px; color: #7a84a8; margin-top: 8px; }
+
+  /* CATEGORY BUTTONS - large touch targets */
+  .cat-buttons { display: flex; gap: 8px; margin-bottom: 12px; }
+  .cat-btn {
+    flex: 1; padding: 18px 8px; border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.1);
+    font-size: 20px; font-weight: 700;
+    font-family: 'Courier New', monospace;
+    cursor: pointer; transition: all 0.15s;
+    background: rgba(255,255,255,0.05); color: #c8d0e8;
+    letter-spacing: 2px; touch-action: manipulation;
+    user-select: none; -webkit-user-select: none;
+    min-height: 64px;
+  }
+  .cat-btn:active:not(:disabled) { transform: scale(0.95); }
+  .cat-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .cat-btn.ar  { border-color: #e8873a44; }
+  .cat-btn.ar.selected,  .cat-btn.ar:active:not(:disabled)  { background: rgba(232,135,58,0.2);  border-color: #e8873a; color: #e8873a; }
+  .cat-btn.are { border-color: #7cb87c44; }
+  .cat-btn.are.selected, .cat-btn.are:active:not(:disabled) { background: rgba(124,184,124,0.2); border-color: #7cb87c; color: #7cb87c; }
+  .cat-btn.air { border-color: #c4b5fd44; }
+  .cat-btn.air.selected, .cat-btn.air:active:not(:disabled) { background: rgba(196,181,253,0.2); border-color: #c4b5fd; color: #c4b5fd; }
+
+  /* BUTTONS - minimum 48px touch height */
+  .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+  .btn {
+    border: none; border-radius: 12px; font-size: 14px; font-weight: 600;
+    padding: 14px 12px; cursor: pointer; transition: all 0.15s; flex: 1;
+    touch-action: manipulation; user-select: none; min-height: 48px;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.96); }
+  .btn-primary { background: linear-gradient(135deg, #4a7fd4, #7c5cbf); color: white; }
+  .btn-primary:disabled { background: rgba(255,255,255,0.05); color: #4a5070; cursor: not-allowed; }
+  .btn-ghost { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.11) !important; color: #c8d0e8; }
+  .btn-ghost:disabled { color: #4a5070; cursor: not-allowed; }
+  .btn-full { width: 100%; background: linear-gradient(135deg, #4a7fd4, #7c5cbf); color: white; font-size: 16px; padding: 16px; box-shadow: 0 8px 22px rgba(74,127,212,0.3); border-radius: 14px; border: none; cursor: pointer; touch-action: manipulation; min-height: 56px; }
+
+  /* FEEDBACK */
+  .feedback-box { padding: 13px 15px; border-radius: 12px; margin-bottom: 12px; font-size: 14px; text-align: center; }
+  .feedback-correct { background: rgba(124,184,124,0.12); border: 1px solid rgba(124,184,124,0.3); color: #7cb87c; }
+  .feedback-wrong   { background: rgba(220,100,100,0.12); border: 1px solid rgba(220,100,100,0.3); color: #e87a7a; }
+  .feedback-partial { background: rgba(232,135,58,0.12);  border: 1px solid rgba(232,135,58,0.3);  color: #e8873a; }
+  .feedback-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
+  .fb-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .fb-item span:first-child { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+  .fb-item span:last-child  { font-family: 'Courier New', monospace; font-weight: 700; font-size: 15px; }
+
+  /* DONE */
+  .done { text-align: center; }
+  .done .big-score { font-size: 44px; font-weight: 700; color: #7eb8f7; margin-bottom: 4px; }
+  .done .score-label { font-size: 14px; color: #9ca3c8; margin-bottom: 20px; }
+  .results-list { max-height: 50vh; overflow-y: auto; margin-bottom: 16px; text-align: left; -webkit-overflow-scrolling: touch; }
+  .result-row { padding: 9px 12px; margin-bottom: 4px; border-radius: 8px; font-size: 13px; }
+  .result-row.ok      { background: rgba(124,184,124,0.1); border: 1px solid rgba(124,184,124,0.25); }
+  .result-row.partial { background: rgba(232,135,58,0.1);  border: 1px solid rgba(232,135,58,0.25); }
+  .result-row.bad     { background: rgba(220,100,100,0.1); border: 1px solid rgba(220,100,100,0.25); }
+  .result-top { display: flex; align-items: center; gap: 7px; margin-bottom: 2px; }
+  .result-word { font-family: 'Courier New', monospace; font-weight: 600; letter-spacing: 1px; }
+  .cat-tag { font-size: 9px; border-radius: 4px; padding: 2px 5px; letter-spacing: 1px; font-weight: 700; }
+  .result-detail { font-size: 11px; color: #9ca3c8; display: flex; gap: 10px; flex-wrap: wrap; }
+  .result-detail .wrong { color: #e87a7a; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="sub">Unit V · Sort 25</div>
+  <h1>Spelling Test</h1>
+  <div class="desc">R-Influenced Vowels · ar, are, air · 23 words</div>
+</div>
+
+<div class="card">
+
+  <!-- BLOCKER: shown when not on https or localhost -->
+  <div id="sectionBlocker" class="blocker hidden">
+    <div class="icon">🔒</div>
+    <h2>Microphone needs HTTPS</h2>
+    <p>Browsers only allow microphone access on secure pages. The easiest fix is a free GitHub Pages site.</p>
+    <div class="steps">
+      <strong>One-time setup (5 minutes):</strong><br>
+      1. Go to <strong>github.com</strong> and create a free account<br>
+      2. Create a new repository, tick <strong>Add README</strong><br>
+      3. Upload <strong>spelling-test.html</strong> to the repo<br>
+      4. Go to Settings → Pages → Branch: main → Save<br>
+      5. Your URL will be:
+    </div>
+    <div class="url-box">https://YOUR-USERNAME.github.io/REPO-NAME/spelling-test.html</div>
+    <p style="font-size:12px;color:#7a84a8">Or run locally: <strong>python3 -m http.server 8000</strong> then open localhost:8000/spelling-test.html in Chrome</p>
+  </div>
+
+  <!-- INTRO -->
+  <div id="sectionIntro" class="intro hidden">
+    <div class="icon">🎙️</div>
+    <p>I'll say the word and a sentence. Tap the mic <strong>once per letter</strong>, then tap the category.</p>
+    <p class="note">23 words · shuffled every round · tap a tile to delete it</p>
+    <div class="slider-row">
+      <div class="lbl"><span>Speed</span><span id="speedLabel">Normal</span></div>
+      <input type="range" id="speedSlider" min="1" max="3" step="1" value="2">
+      <div class="slider-hints"><span>Slow</span><span>Normal</span><span>Fast</span></div>
+    </div>
+    <div class="voice-row" id="voiceRow" style="display:none">
+      <label>Voice</label>
+      <select id="voiceSelect"></select>
+    </div>
+    <button class="btn btn-full" onclick="startTest()">Start Test</button>
+  </div>
+
+  <!-- TEST -->
+  <div id="sectionTest" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="wordLabel">Word 1 of 23</span>
+        <span id="correctLabel">0 correct</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+
+    <div class="agent-indicator">
+      <div class="agent-pill">
+        <span id="agentIcon">🎤</span>
+        <span id="agentText">Ready</span>
+      </div>
+    </div>
+
+    <div id="feedbackBox" class="feedback-box hidden"></div>
+
+    <!-- STEP 1: Spell -->
+    <div id="stepSpell">
+      <div class="phase-label phase-spell">Step 1 — Spell the word</div>
+      <div class="tiles-wrap" id="tilesWrap">
+        <span class="tiles-empty">Your letters will appear here</span>
+      </div>
+      <div class="status-line" id="statusLine">Waiting for word...</div>
+      <div class="mic-area">
+        <button class="mic-btn" id="micBtn" onclick="listenOneLetter()" disabled>🎙️</button>
+        <div class="mic-label" id="micLabel">Tap once for each letter</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost"   id="btnRepeat"    onclick="repeatWord()"   disabled>🔁 Repeat</button>
+        <button class="btn btn-ghost"   id="btnUndo"      onclick="undoLetter()"   disabled>⌫ Undo</button>
+        <button class="btn btn-primary" id="btnSpellDone" onclick="doneSpelling()" disabled>Done →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Category -->
+    <div id="stepCat" class="hidden">
+      <div class="phase-label phase-cat">Step 2 — What category?</div>
+      <div class="cat-buttons">
+        <button class="cat-btn ar"  id="catAr"  onclick="selectCat('ar')"  disabled>ar</button>
+        <button class="cat-btn are" id="catAre" onclick="selectCat('are')" disabled>are</button>
+        <button class="cat-btn air" id="catAir" onclick="selectCat('air')" disabled>air</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost"   id="btnRepeat2" onclick="repeatWord()"   disabled>🔁 Repeat</button>
+        <button class="btn btn-primary" id="btnCatDone" onclick="submitAnswer()" disabled>Submit →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div id="sectionDone" class="hidden done">
+    <div id="doneEmoji" style="font-size:50px;margin-bottom:10px"></div>
+    <div class="big-score" id="doneScore"></div>
+    <div class="score-label" id="doneLabel"></div>
+    <div class="results-list" id="resultsList"></div>
+    <button class="btn btn-full" onclick="restartTest()">Try Again (New Order)</button>
+  </div>
+
+</div>
+
+<script>
+const ALL_WORDS = [
+  { word:"part",   category:"ar",  sentence:"He played a part in the school play." },
+  { word:"harm",   category:"ar",  sentence:"Be careful not to harm the butterfly." },
+  { word:"dark",   category:"ar",  sentence:"The room was very dark at night." },
+  { word:"shark",  category:"ar",  sentence:"A shark swam past the diving boat." },
+  { word:"sharp",  category:"ar",  sentence:"The pencil has a sharp point." },
+  { word:"start",  category:"ar",  sentence:"We will start the race at noon." },
+  { word:"heart",  category:"ar",  sentence:"Your heart pumps blood around your body." },
+  { word:"care",   category:"are", sentence:"Please take care of the puppy." },
+  { word:"pare",   category:"are", sentence:"Use a knife to pare the apple skin." },
+  { word:"stare",  category:"are", sentence:"It is rude to stare at someone." },
+  { word:"square", category:"are", sentence:"A square has four equal sides." },
+  { word:"hare",   category:"are", sentence:"The hare ran faster than the tortoise." },
+  { word:"fare",   category:"are", sentence:"He paid the bus fare with coins." },
+  { word:"bare",   category:"are", sentence:"She walked with bare feet on the grass." },
+  { word:"wear",   category:"are", sentence:"What will you wear to the party?" },
+  { word:"where",  category:"are", sentence:"Do you know where your backpack is?" },
+  { word:"bear",   category:"are", sentence:"A bear was sleeping in the cave." },
+  { word:"pear",   category:"are", sentence:"She bit into a juicy pear for lunch." },
+  { word:"hair",   category:"air", sentence:"She brushed her long hair every morning." },
+  { word:"fair",   category:"air", sentence:"The school fair had games and prizes." },
+  { word:"chair",  category:"air", sentence:"Please sit in the chair by the window." },
+  { word:"pair",   category:"air", sentence:"He bought a pair of new shoes." },
+  { word:"stair",  category:"air", sentence:"She tripped on the top stair." },
+];
+
+const CAT_COLORS = { ar:"#e8873a", are:"#7cb87c", air:"#c4b5fd" };
+const SPEEDS = { 1:0.65, 2:0.85, 3:1.05 };
+const SPEED_LABELS = { 1:"Slow", 2:"Normal", 3:"Fast" };
+
+const LETTER_MAP = {
+  "a":"A","ay":"A","aye":"A",
+  "b":"B","be":"B","bee":"B",
+  "c":"C","see":"C","sea":"C","cee":"C","si":"C",
+  "d":"D","dee":"D","de":"D",
+  "e":"E","ee":"E","he":"E",
+  "f":"F","ef":"F","eff":"F",
+  "g":"G","gee":"G","je":"G","jee":"G",
+  "h":"H","aitch":"H","haitch":"H","ach":"H","age":"H",
+  "i":"I","eye":"I","ai":"I",
+  "j":"J","jay":"J","jaye":"J",
+  "k":"K","kay":"K","kaye":"K",
+  "l":"L","el":"L","ell":"L",
+  "m":"M","em":"M","emm":"M",
+  "n":"N","en":"N","inn":"N",
+  "o":"O","oh":"O","owe":"O",
+  "p":"P","pee":"P","pe":"P","pea":"P",
+  "q":"Q","queue":"Q","cue":"Q",
+  "r":"R","argh":"R","our":"R",
+  "s":"S","es":"S","ess":"S",
+  "t":"T","tee":"T","te":"T","tea":"T",
+  "u":"U","you":"U","yew":"U",
+  "v":"V","vee":"V","ve":"V",
+  "w":"W","double u":"W","double you":"W","doubleyou":"W","dub":"W",
+  "x":"X","ex":"X","eks":"X",
+  "y":"Y","why":"Y","wi":"Y","wye":"Y",
+  "z":"Z","zee":"Z","zed":"Z",
+};
+
+function extractLetter(transcript) {
+  const t = transcript.toLowerCase().trim().replace(/[^a-z\s]/g,"");
+  const tokens = t.split(/\s+/).filter(Boolean);
+  // Two-word first
+  if (tokens.length >= 2) {
+    const two = tokens[0]+" "+tokens[1];
+    if (LETTER_MAP[two]) return LETTER_MAP[two];
+  }
+  for (const w of tokens) {
+    if (LETTER_MAP[w]) return LETTER_MAP[w];
+    if (w.length===1 && /[a-z]/.test(w)) return w.toUpperCase();
+  }
+  return null;
+}
+
+// ── Check we're on a secure origin ───────────────────────────────────────────
+const isSecure = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+const SpeechRecog = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!isSecure || !SpeechRecog || typeof speechSynthesis === "undefined") {
+  document.getElementById("sectionBlocker").classList.remove("hidden");
+} else {
+  document.getElementById("sectionIntro").classList.remove("hidden");
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+let words=[], currentIndex=0, results=[], voices=[];
+let speltLetters=[], selectedCategory="", agentSpeaking=false;
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+  const sel = document.getElementById("voiceSelect");
+  sel.innerHTML = "";
+  voices.forEach(v => { const o=document.createElement("option"); o.value=v.name; o.textContent=v.name; sel.appendChild(o); });
+  const pref = voices.find(v => ["Samantha","Karen","Daniel","Alex","Google US English","Google UK English Female"].some(n=>v.name.includes(n))) || voices[0];
+  if (pref) sel.value = pref.name;
+  document.getElementById("voiceRow").style.display = voices.length>1?"block":"none";
+}
+
+document.getElementById("speedSlider").addEventListener("input", e => {
+  document.getElementById("speedLabel").textContent = SPEED_LABELS[e.target.value];
+});
+
+function getRate() { return SPEEDS[document.getElementById("speedSlider").value]||0.85; }
+
+function speak(text, rate, onEnd) {
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate=rate||0.85; utt.pitch=1.0;
+  const v = voices.find(v=>v.name===document.getElementById("voiceSelect").value);
+  if (v) utt.voice=v;
+  agentSpeaking=true; setAgentUI("speaking");
+  utt.onend  = ()=>{ agentSpeaking=false; setAgentUI("idle"); if(onEnd) onEnd(); };
+  utt.onerror = ()=>{ agentSpeaking=false; setAgentUI("idle"); if(onEnd) onEnd(); };
+  speechSynthesis.speak(utt);
+}
+
+function setAgentUI(state) {
+  document.getElementById("agentIcon").innerHTML = state==="speaking"
+    ? '<div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>' : "🎤";
+  document.getElementById("agentText").textContent = state==="speaking" ? "Speaking..." : "Your turn";
+}
+
+// ── Single-shot letter recognition ───────────────────────────────────────────
+function resetMicBtn() {
+  const btn = document.getElementById("micBtn");
+  btn.classList.remove("listening");
+  btn.textContent = "🎙️";
+  btn.disabled = false;
+}
+
+function listenOneLetter() {
+  if (agentSpeaking) return;
+  const btn = document.getElementById("micBtn");
+  btn.classList.add("listening");
+  btn.disabled = true;
+  btn.textContent = "👂";
+  setStatus("Listening...");
+
+  const rec = new SpeechRecog();
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.lang = "en-US";
+  rec.maxAlternatives = 5;
+
+  let handled = false;
+
+  function finish(statusMsg) {
+    if (handled) return;
+    handled = true;
+    setTimeout(()=>{ resetMicBtn(); setStatus(statusMsg); }, 100);
+  }
+
+  rec.onresult = (e) => {
+    let letter = null;
+    for (let i=0; i<e.results[0].length; i++) {
+      letter = extractLetter(e.results[0][i].transcript);
+      if (letter) break;
+    }
+    if (letter) {
+      addLetter(letter);
+      finish("Got: " + letter + " — tap for next letter");
+    } else {
+      finish("Heard \"" + e.results[0][0].transcript + "\" — try again");
+    }
+  };
+
+  rec.onerror = (e) => {
+    if      (e.error==="not-allowed")  finish("Mic blocked — check browser permissions");
+    else if (e.error==="no-speech")    finish("Nothing heard — tap again");
+    else if (e.error!=="aborted")      finish("Error: "+e.error+" — try again");
+  };
+
+  rec.onend = () => finish("Nothing heard — tap again");
+
+  try { rec.start(); }
+  catch(e) { resetMicBtn(); setStatus("Could not start mic — try again"); }
+}
+
+// ── Tiles ─────────────────────────────────────────────────────────────────────
+function addLetter(l) {
+  speltLetters.push(l); renderTiles();
+  document.getElementById("btnUndo").disabled=false;
+  document.getElementById("btnSpellDone").disabled=false;
+}
+function undoLetter() {
+  speltLetters.pop(); renderTiles();
+  document.getElementById("btnUndo").disabled=speltLetters.length===0;
+  document.getElementById("btnSpellDone").disabled=speltLetters.length===0;
+}
+function removeTileAt(i) {
+  speltLetters.splice(i,1); renderTiles();
+  document.getElementById("btnUndo").disabled=speltLetters.length===0;
+  document.getElementById("btnSpellDone").disabled=speltLetters.length===0;
+}
+function renderTiles() {
+  const wrap=document.getElementById("tilesWrap");
+  if (!speltLetters.length) { wrap.innerHTML='<span class="tiles-empty">Your letters will appear here</span>'; return; }
+  wrap.innerHTML=speltLetters.map((l,i)=>
+    `<div class="tile${i===speltLetters.length-1?" new":""}" onclick="removeTileAt(${i})">${l}</div>`
+  ).join("");
+}
+function setStatus(msg) { document.getElementById("statusLine").textContent=msg; }
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function show(id){document.getElementById(id).classList.remove("hidden");}
+function hide(id){document.getElementById(id).classList.add("hidden");}
+
+function setSpellControls(on) {
+  document.getElementById("micBtn").disabled       = !on;
+  document.getElementById("btnRepeat").disabled    = !on;
+  document.getElementById("btnUndo").disabled      = !on || speltLetters.length===0;
+  document.getElementById("btnSpellDone").disabled = !on || speltLetters.length===0;
+  document.getElementById("micLabel").textContent  = on ? "Tap once for each letter" : "Wait...";
+}
+function setCatControls(on) {
+  ["catAr","catAre","catAir","btnRepeat2"].forEach(id=>document.getElementById(id).disabled=!on);
+  document.getElementById("btnCatDone").disabled = !on || !selectedCategory;
+}
+function clearCatSelection() {
+  ["catAr","catAre","catAir"].forEach(id=>document.getElementById(id).classList.remove("selected"));
+  selectedCategory=""; document.getElementById("btnCatDone").disabled=true;
+}
+function updateProgress() {
+  const c=results.filter(r=>r.spellCorrect&&r.catCorrect).length;
+  document.getElementById("wordLabel").textContent=`Word ${currentIndex+1} of ${words.length}`;
+  document.getElementById("correctLabel").textContent=`${c} correct`;
+  document.getElementById("progressFill").style.width=`${(currentIndex/words.length)*100}%`;
+}
+
+// ── Flow ──────────────────────────────────────────────────────────────────────
+function startTest() {
+  words=shuffle(ALL_WORDS); currentIndex=0; results=[];
+  hide("sectionIntro"); show("sectionTest"); hide("feedbackBox");
+  speltLetters=[]; selectedCategory=""; renderTiles(); updateProgress();
+  show("stepSpell"); hide("stepCat");
+  speak("Let's begin. I will say the word and a sentence. Tap the microphone once for each letter to spell it back, then tap the category.", getRate(), ()=>setTimeout(sayWord,300));
+}
+
+function sayWord() {
+  hide("feedbackBox");
+  speltLetters=[]; selectedCategory=""; renderTiles();
+  setStatus("Listen carefully...");
+  clearCatSelection(); setSpellControls(false); setCatControls(false);
+  show("stepSpell"); hide("stepCat"); updateProgress();
+  const {word,sentence}=words[currentIndex];
+  speak(`Word number ${currentIndex+1}. ${word}. ${sentence}. ${word}.`, getRate(), ()=>{
+    setStatus("Now tap the mic once for each letter");
+    setSpellControls(true);
+  });
+}
+
+function repeatWord() {
+  if (agentSpeaking) return;
+  const inCat=!document.getElementById("stepCat").classList.contains("hidden");
+  const {word,sentence}=words[currentIndex];
+  speak(`${word}. ${sentence}. ${word}.`, getRate()*0.9, ()=>{
+    if (!inCat) setSpellControls(true); else setCatControls(true);
+  });
+}
+
+function doneSpelling() {
+  setSpellControls(false); hide("stepSpell"); show("stepCat");
+  selectedCategory=""; clearCatSelection();
+  speak("Good. Now tap the category: ar, are, or air.", getRate(), ()=>setCatControls(true));
+}
+
+function selectCat(cat) {
+  clearCatSelection(); selectedCategory=cat;
+  document.getElementById("cat"+cat.charAt(0).toUpperCase()+cat.slice(1)).classList.add("selected");
+  document.getElementById("btnCatDone").disabled=false;
+}
+
+function submitAnswer() {
+  if (!selectedCategory) return;
+  setCatControls(false);
+  const {word,category}=words[currentIndex];
+  const userSpelling=speltLetters.join("").toLowerCase();
+  const spellCorrect=userSpelling===word.toLowerCase();
+  const catCorrect=selectedCategory===category;
+  results.push({word,category,userSpelling,userCat:selectedCategory,spellCorrect,catCorrect});
+
+  const fb=document.getElementById("feedbackBox");
+  const both=spellCorrect&&catCorrect, none=!spellCorrect&&!catCorrect;
+  fb.className="feedback-box "+(both?"feedback-correct":none?"feedback-wrong":"feedback-partial");
+  fb.innerHTML=(both?"✅ Both correct!":none?"❌ Both wrong":"⚠️ One part wrong")+
+    `<div class="feedback-row">
+      <div class="fb-item"><span>Spelling</span><span style="color:${spellCorrect?"#7cb87c":"#e87a7a"}">${spellCorrect?"✓ "+word:"✗ "+userSpelling}</span></div>
+      <div class="fb-item"><span>Category</span><span style="color:${catCorrect?CAT_COLORS[category]:"#e87a7a"}">${catCorrect?"✓ "+category:"✗ "+selectedCategory+" ("+category+")"}</span></div>
+    </div>`;
+  show("feedbackBox");
+
+  let speech;
+  if (both) speech="Correct!";
+  else if (none) speech=`Not quite. ${word} is spelled ${word.split("").join(", ")}. The category is ${category}.`;
+  else if (!spellCorrect) speech=`${word} is spelled ${word.split("").join(", ")}. Good job on the category.`;
+  else speech=`Good spelling! But the category is ${category}, not ${selectedCategory}.`;
+
+  speak(speech, getRate()*0.88, ()=>setTimeout(advance,400));
+}
+
+function advance() {
+  currentIndex++;
+  if (currentIndex>=words.length) showDone(); else sayWord();
+}
+
+function showDone() {
+  hide("sectionTest"); show("sectionDone");
+  const score=results.filter(r=>r.spellCorrect&&r.catCorrect).length;
+  const sp=results.filter(r=>r.spellCorrect).length;
+  const ca=results.filter(r=>r.catCorrect).length;
+  const pct=Math.round((score/words.length)*100);
+  document.getElementById("doneEmoji").textContent=pct>=90?"🌟":pct>=70?"👏":pct>=50?"💪":"📚";
+  document.getElementById("doneScore").textContent=`${score}/${words.length}`;
+  document.getElementById("doneLabel").textContent=`${sp} spelling · ${ca} categories correct`;
+  document.getElementById("resultsList").innerHTML=results.map(r=>{
+    const cls=r.spellCorrect&&r.catCorrect?"ok":(!r.spellCorrect&&!r.catCorrect)?"bad":"partial";
+    const cc=CAT_COLORS[r.category]||"#888";
+    return `<div class="result-row ${cls}">
+      <div class="result-top">
+        <span>${r.spellCorrect&&r.catCorrect?"✓":r.spellCorrect||r.catCorrect?"~":"✗"}</span>
+        <span class="result-word">${r.word}</span>
+        <span class="cat-tag" style="background:${cc}22;color:${cc};border:1px solid ${cc}44">${r.category}</span>
+      </div>
+      <div class="result-detail">
+        ${!r.spellCorrect?`<span class="wrong">spelled: ${r.userSpelling||"?"}</span>`:"<span>✓ spelling</span>"}
+        ${!r.catCorrect?`<span class="wrong">said: ${r.userCat}</span>`:"<span>✓ category</span>"}
+      </div>
+    </div>`;
+  }).join("");
+  speak(`Test complete. You got ${score} out of ${words.length} fully correct. ${sp} spellings and ${ca} categories right. Well done!`, getRate());
+}
+
+function restartTest() {
+  speechSynthesis.cancel();
+  hide("sectionDone"); show("sectionIntro");
+}
+</script>
+</body>
+</html>
