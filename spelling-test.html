@@ -369,7 +369,9 @@ let words=[], currentIndex=0, results=[], voices=[];
 let speltLetters=[], selectedCategory="", agentSpeaking=false;
 
 function loadVoices() {
-  voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+  const v = speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+  if (v.length === 0) return; // not ready yet, onvoiceschanged will retry
+  voices = v;
   const sel = document.getElementById("voiceSelect");
   sel.innerHTML = "";
   voices.forEach(v => { const o=document.createElement("option"); o.value=v.name; o.textContent=v.name; sel.appendChild(o); });
@@ -385,15 +387,36 @@ document.getElementById("speedSlider").addEventListener("input", e => {
 function getRate() { return SPEEDS[document.getElementById("speedSlider").value]||0.85; }
 
 function speak(text, rate, onEnd) {
+  if (voices.length === 0) loadVoices();
   speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
-  utt.rate=rate||0.85; utt.pitch=1.0;
-  const v = voices.find(v=>v.name===document.getElementById("voiceSelect").value);
-  if (v) utt.voice=v;
-  agentSpeaking=true; setAgentUI("speaking");
-  utt.onend  = ()=>{ agentSpeaking=false; setAgentUI("idle"); if(onEnd) onEnd(); };
-  utt.onerror = ()=>{ agentSpeaking=false; setAgentUI("idle"); if(onEnd) onEnd(); };
-  speechSynthesis.speak(utt);
+  utt.rate = rate||0.85; utt.pitch = 1.0;
+  const sel = document.getElementById("voiceSelect");
+  const v = voices.find(v => v.name === sel.value);
+  if (v) utt.voice = v;
+  agentSpeaking = true; setAgentUI("speaking");
+
+  let cbFired = false;
+  function done() {
+    if (cbFired) return;
+    cbFired = true;
+    agentSpeaking = false; setAgentUI("idle");
+    if (onEnd) onEnd();
+  }
+
+  // Safety timeout in case onend never fires (known browser bug)
+  const wordCount = text.split(" ").length;
+  const estMs = Math.max(3000, (wordCount / (rate||0.85)) * 450);
+  const safety = setTimeout(done, estMs + 2000);
+
+  utt.onend = () => { clearTimeout(safety); done(); };
+  utt.onerror = (e) => {
+    clearTimeout(safety);
+    if (e.error !== "interrupted") console.warn("speech error:", e.error);
+    done();
+  };
+
+  try { speechSynthesis.speak(utt); } catch(e) { clearTimeout(safety); done(); }
 }
 
 function setAgentUI(state) {
@@ -520,7 +543,10 @@ function startTest() {
   hide("sectionIntro"); show("sectionTest"); hide("feedbackBox");
   speltLetters=[]; selectedCategory=""; renderTiles(); updateProgress();
   show("stepSpell"); hide("stepCat");
-  speak("Let's begin. I will say the word and a sentence. Tap the microphone once for each letter to spell it back, then tap the category.", getRate(), ()=>setTimeout(sayWord,300));
+  // Skip the long intro and go straight to the first word.
+  // Browsers often block speech until user has interacted; "Start Test" click
+  // IS the interaction so speaking should work now.
+  sayWord();
 }
 
 function sayWord() {
